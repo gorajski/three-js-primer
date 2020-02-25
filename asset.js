@@ -37,6 +37,9 @@ window.onload = () => {
 		if(cube.position.x <= -3 || cube.position.x >= 3)
 			increment *= -1
 
+		// let axes = new THREE.AxesHelper( 5 )
+		// scene.add(axes)
+
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
 	}
