@@ -1,19 +1,21 @@
 let scene, camera, renderer
-let sphere
+let torus
 let increment = 0.1;
 
 window.onload = () => { 
 
-	let createSphere = function() {
-		let geometry = new THREE.SphereGeometry(5,8,8,0,Math.PI,0,Math.PI/2)
-		// Sphere Properties:
-		// radius 5
-		// and horz and vert segments of 8
-		// horizontal sweep angle goes from 0 to PI (starts at (0,0,0), ends at (PI,0,0) thru xz plane)
-		// vertical sweep angle goes from 0 to PI/2 (starts at (0,PI/2,0), ends at (0,0,0) thru xy plane)
+	let createTorus = function() {
+		let geometry = new THREE.TorusGeometry(5,1,15,15,Math.PI)
+		// Torus Properties:
+		// The "center of gravity" to its outermost edge
+		// The thickness of the tube AKA cross-sectional diameter
+		// The radius segments count AKA # of segments around the circumference of the small circle
+		// The tubular segments count AKA # of segments around the circumference of the large circle
+		// The arc AKA fractional cut of the torus around the large circle
+
 		let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})
-		sphere = new THREE.Mesh(geometry, material)
-		scene.add(sphere)
+		torus = new THREE.Mesh(geometry, material)
+		scene.add(torus)
 	}
 
 	let init = function() {
@@ -26,7 +28,7 @@ window.onload = () => {
 		camera.position.z = 20
 
 		// create and locate the objects on the scene
-		createSphere()
+		createTorus()
 
 		// create the renderer
 		renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -36,8 +38,8 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		sphere.rotation.x += increment
-		sphere.rotation.y += increment
+		torus.rotation.x += increment
+		torus.rotation.y += increment
 
 		// let axes = new THREE.AxesHelper( 5 )
 		// scene.add(axes)
