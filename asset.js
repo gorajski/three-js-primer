@@ -9,16 +9,13 @@ window.onload = () => {
 		let thickness = 0.14 + 0.15 * Math.random()
 
 		let geometry = new THREE.TorusGeometry(radius,thickness,8,16)
-
-		let red = Math.floor(255 * Math.random())
-		let green = Math.floor(255 * Math.random())
-		let blue = Math.floor(255 * Math.random())
-		let material = new THREE.MeshBasicMaterial({color: `rgb(${red},${green},${blue})`})
+		let material = new THREE.MeshBasicMaterial({color: Math.random() * 0xffffff})
 
 		let torus = new THREE.Mesh(geometry, material)
 
 		torus.position.x = -20 + 40 * Math.random()
-		torus.position.y = -6 + 24 * Math.random()
+		torus.position.y = -25 + 50 * Math.random()
+		torus.position.z = -11 + 20 * Math.random()
 		torus.rotation.x = Math.PI * Math.random()
 		torus.rotation.y = Math.PI * Math.random()
 
@@ -35,7 +32,7 @@ window.onload = () => {
 		camera.position.z = 20
 
 		// create and locate the objects on the scene
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < 50; i++) {
 			let torus = createTorus()
 			torusArray.push(torus)
 			scene.add(torus)
@@ -54,7 +51,7 @@ window.onload = () => {
 			torus.rotation.x += increment
 			torus.position.y -= increment
 
-			if (torus.position.y < -16) torus.position.y = 16
+			if (torus.position.y < -25) torus.position.y = 25
 		})
 
 		// let axes = new THREE.AxesHelper( 5 )
