@@ -1,21 +1,28 @@
 let scene, camera, renderer
-let torus
+let torusArray = []
 let increment = 0.1;
 
 window.onload = () => { 
 
 	let createTorus = function() {
-		let geometry = new THREE.TorusGeometry(5,1,15,15,Math.PI)
-		// Torus Properties:
-		// The "center of gravity" to its outermost edge
-		// The thickness of the tube AKA cross-sectional diameter
-		// The radius segments count AKA # of segments around the circumference of the small circle
-		// The tubular segments count AKA # of segments around the circumference of the large circle
-		// The arc AKA fractional cut of the torus around the large circle
+		let radius = 0.4 + 0.25 * Math.random()
+		let thickness = 0.14 + 0.15 * Math.random()
 
-		let material = new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})
-		torus = new THREE.Mesh(geometry, material)
-		scene.add(torus)
+		let geometry = new THREE.TorusGeometry(radius,thickness,8,16)
+
+		let red = Math.floor(255 * Math.random())
+		let green = Math.floor(255 * Math.random())
+		let blue = Math.floor(255 * Math.random())
+		let material = new THREE.MeshBasicMaterial({color: `rgb(${red},${green},${blue})`})
+
+		let torus = new THREE.Mesh(geometry, material)
+
+		torus.position.x = -20 + 40 * Math.random()
+		torus.position.y = -6 + 24 * Math.random()
+		torus.rotation.x = Math.PI * Math.random()
+		torus.rotation.y = Math.PI * Math.random()
+
+		return torus
 	}
 
 	let init = function() {
@@ -24,11 +31,15 @@ window.onload = () => {
 		scene.background = new THREE.Color(0x000000)
 		
 		// create and locate the camera
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 10, 2000)
 		camera.position.z = 20
 
 		// create and locate the objects on the scene
-		createTorus()
+		for (let i = 0; i < 20; i++) {
+			let torus = createTorus()
+			torusArray.push(torus)
+			scene.add(torus)
+		}
 
 		// create the renderer
 		renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -38,8 +49,13 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		torus.rotation.x += increment
-		torus.rotation.y += increment
+		
+		torusArray.forEach( (torus) => {
+			torus.rotation.x += increment
+			torus.position.y -= increment
+
+			if (torus.position.y < -16) torus.position.y = 16
+		})
 
 		// let axes = new THREE.AxesHelper( 5 )
 		// scene.add(axes)
