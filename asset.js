@@ -1,63 +1,63 @@
 let scene, camera, renderer
-let torusArray = []
-let increment = 0.1;
 
 window.onload = () => { 
 
-	let createTorus = function() {
-		let radius = 0.4 + 0.25 * Math.random()
-		let thickness = 0.14 + 0.15 * Math.random()
+	const STEP = 0.02;
+	let outerRing, midRing, innerRing, planet
+	let count
 
-		let geometry = new THREE.TorusGeometry(radius,thickness,8,16)
-		let material = new THREE.MeshBasicMaterial({color: Math.random() * 0xffffff})
+	let createRing = function(radius,thickness,color) {
+		let geometry = new THREE.TorusGeometry(radius,thickness,2,55)
+		let material = new THREE.MeshBasicMaterial({color: color})		
+		let ring = new THREE.Mesh(geometry,material)
+		ring.rotation.x = 1.5
+		ring.rotation.y = 0.3
+		return ring
+	}
 
-		let torus = new THREE.Mesh(geometry, material)
-
-		torus.position.x = -20 + 40 * Math.random()
-		torus.position.y = -25 + 50 * Math.random()
-		torus.position.z = -11 + 20 * Math.random()
-		torus.rotation.x = Math.PI * Math.random()
-		torus.rotation.y = Math.PI * Math.random()
-
-		return torus
+	let createPlanet = function() {
+		let geometry = new THREE.SphereGeometry(5,25,25)
+		let material = new THREE.MeshBasicMaterial({color: 0xff8800})
+		let planet = new THREE.Mesh(geometry,material)
+		return planet
 	}
 
 	let init = function() {
+		count = 0;
+
 		// create scene
 		scene = new THREE.Scene()
 		scene.background = new THREE.Color(0x000000)
-		
+
 		// create and locate the camera
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 10, 2000)
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 5, 200)
 		camera.position.z = 20
-
+		camera.position.y = 4
+		
 		// create and locate the objects on the scene
-		for (let i = 0; i < 50; i++) {
-			let torus = createTorus()
-			torusArray.push(torus)
-			scene.add(torus)
-		}
-
+		outerRing = createRing(10, 0.5, 0xfffa00)
+		innerRing = createRing(7.5, 1.5, 0xffaa00)
+		planet = createPlanet()
+		
 		// create the renderer
-		renderer = new THREE.WebGLRenderer({ antialias: true })
-		renderer.setSize(window.innerWidth, window.innerHeight)
+		renderer = new THREE.WebGLRenderer({antialias: true})
+		renderer.setSize(window.innerWidth, innerHeight)
 
 		document.body.appendChild(renderer.domElement)
 	}
 
 	let mainLoop = function() {
-		
-		torusArray.forEach( (torus) => {
-			torus.rotation.x += increment
-			torus.position.y -= increment
+		outerRing.position.y = Math.sin(count)
+		innerRing.position.y = Math.sin(count)
+		planet.position.y = Math.sin(count)
 
-			if (torus.position.y < -25) torus.position.y = 25
-		})
+		count += STEP
 
-		// let axes = new THREE.AxesHelper( 5 )
-		// scene.add(axes)
+		scene.add(outerRing)
+		scene.add(innerRing)
+		scene.add(planet)
 
-		renderer.render(scene, camera)
+		renderer.render(scene,camera)
 		requestAnimationFrame(mainLoop)
 	}
 
