@@ -2,62 +2,47 @@ let scene, camera, renderer
 
 window.onload = () => { 
 
-	const STEP = 0.02;
-	let outerRing, midRing, innerRing, planet
-	let count
-
-	let createRing = function(radius,thickness,color) {
-		let geometry = new THREE.TorusGeometry(radius,thickness,2,55)
-		let material = new THREE.MeshBasicMaterial({color: color})		
-		let ring = new THREE.Mesh(geometry,material)
-		ring.rotation.x = 1.5
-		ring.rotation.y = 0.3
-		return ring
-	}
-
-	let createPlanet = function() {
-		let geometry = new THREE.SphereGeometry(5,25,25)
-		let material = new THREE.MeshBasicMaterial({color: 0xff8800})
-		let planet = new THREE.Mesh(geometry,material)
-		return planet
-	}
+	const STEP = 0.05;
+	let shape
 
 	let init = function() {
-		count = 0;
-
 		// create scene
 		scene = new THREE.Scene()
-		scene.background = new THREE.Color(0x000000)
+		scene.background = new THREE.Color(0x1c1155)
 
-		// create and locate the camera
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 5, 200)
+		// create camera
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 10, 2000)
 		camera.position.z = 20
-		camera.position.y = 4
+
+		// create and locate objects in the scene
+		let geometry = new THREE.Geometry()
+		geometry.vertices.push(new THREE.Vector3(3,0,0))
+		geometry.vertices.push(new THREE.Vector3(0,5,0))
+		geometry.vertices.push(new THREE.Vector3(0,0,2))
+		geometry.vertices.push(new THREE.Vector3(1,2,-2))
+
+		geometry.faces.push(new THREE.Face3(0,1,2))
+		geometry.faces.push(new THREE.Face3(1,2,3))
+		geometry.faces.push(new THREE.Face3(0,1,3))
+
+		let material = new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide, wireframe: true})
 		
-		// create and locate the objects on the scene
-		outerRing = createRing(10, 0.5, 0xfffa00)
-		innerRing = createRing(7.5, 1.5, 0xffaa00)
-		planet = createPlanet()
+		shape = new THREE.Mesh(geometry,material)
 		
+		scene.add(shape)
+
 		// create the renderer
-		renderer = new THREE.WebGLRenderer({antialias: true})
-		renderer.setSize(window.innerWidth, innerHeight)
+		renderer = new THREE.WebGLRenderer({ antialias: true })
+		renderer.setSize(window.innerWidth, window.innerHeight)
 
 		document.body.appendChild(renderer.domElement)
 	}
 
 	let mainLoop = function() {
-		outerRing.position.y = Math.sin(count)
-		innerRing.position.y = Math.sin(count)
-		planet.position.y = Math.sin(count)
+		shape.rotation.x += STEP
+		shape.rotation.y += STEP
 
-		count += STEP
-
-		scene.add(outerRing)
-		scene.add(innerRing)
-		scene.add(planet)
-
-		renderer.render(scene,camera)
+		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
 	}
 
