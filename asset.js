@@ -39,8 +39,8 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		shape.rotation.x += STEP
-		shape.rotation.y += STEP
+		shape.geometry.vertices[1].y -= 0.02
+		shape.geometry.verticesNeedUpdate = true
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
