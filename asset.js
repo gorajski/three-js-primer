@@ -1,7 +1,7 @@
 let scene, camera, renderer
 
 window.onload = () => { 
-
+	
 	const STEP = 0.05;
 	let count, shape
 
@@ -15,27 +15,22 @@ window.onload = () => {
 		// create camera
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 10, 2000)
 		camera.position.z = 20
-		camera.position.y = 5
-		camera.position.x = 10
-		camera.rotation.x = -0.15
-
 
 		// create and locate objects in the scene
-		let geometry = new THREE.Geometry()
-		geometry.vertices.push(new THREE.Vector3(0,0,0))
-		geometry.vertices.push(new THREE.Vector3(5,2,0))
-		geometry.vertices.push(new THREE.Vector3(3,-0.9,8))
-		geometry.vertices.push(new THREE.Vector3(3,-0.9,-8))
+		let loader = new THREE.FontLoader()
+		let font = loader.parse(fontJSON)
 
-		geometry.faces.push(new THREE.Face3(0,1,2))
-		geometry.faces.push(new THREE.Face3(0,1,3))
+		let geometry = new THREE.TextGeometry("hello world", {font: font, size: 5, height: 2})
+		//font - font object loaded by the font loader
+		//size - font size
+		//height - text depth AKA thickness in the z-axis
 
-		let material = new THREE.MeshBasicMaterial({color: 0xff0000, side: THREE.DoubleSide, wireframe: false})
+		let material = new THREE.MeshBasicMaterial({color: 0x034b59})
+		text = new THREE.Mesh(geometry,material)
+		text.position.x = -15
+		text.position.z = -25
 		
-		shape = new THREE.Mesh(geometry,material)
-		
-		
-		scene.add(shape)
+		scene.add(text)
 
 		// create the renderer
 		renderer = new THREE.WebGLRenderer({ antialias: true })
@@ -45,10 +40,8 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		shape.geometry.vertices[2].y += 0.12 * Math.sin(count)
-		shape.geometry.vertices[3].y += 0.12 * Math.sin(count)
-		shape.geometry.verticesNeedUpdate = true
-		count += STEP
+		
+		text.rotation.x += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
