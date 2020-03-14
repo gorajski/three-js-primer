@@ -11,9 +11,9 @@ window.onload = () => {
 
 		let titles = "99 bottles of beer on the wall,\n99 bottles of beer.\nTake one down and pass it around,\n98 bottles of beer on the wall.\n\n98 bottles of beer on the wall,\n98 bottles of beer.\nTake one down and pass it around,\n97 bottles of beer on the wall.\n\n3 bottles of beer on the wall,\n3 bottles of beer.\nTake one down and pass it around,\n2 bottles of beer on the wall.\n\n2 bottles of beer on the wall,\n2 bottles of beer.\nTake one down and pass it around,\n1 bottle of beer on the wall.\n\n1 bottle of beer on the wall,\n1 bottle of beer.\nTake one down and pass it around,\nno more bottles of beer on the wall.\n\nNo more bottles of beer on the wall,\nno more bottles of beer.\nGo to the store and buy some more, 99 bottles of beer on the wall.\n"
 	
-		let geometry = new THREE.TextGeometry(titles, {font: font, size: 1, height: 0.1})
+		let geometry = new THREE.TextGeometry(titles, {font: font, size: 1, height: 0.05})
 
-		let material = new THREE.MeshBasicMaterial({color: 0xffffff})
+		let material = new THREE.MeshBasicMaterial({color: 0xffff00})
 		text = new THREE.Mesh(geometry,material)
 
 		text.position.x = -10
