@@ -3,27 +3,26 @@ let scene, camera, renderer
 window.onload = () => { 
 	
 	let STEP = 0.02;
-	let particles
-
-	let randomInRange = function(to, from) {
-		return Math.random() * (to - from) + from
-	}
+	let cube, sphere, cone
 
 	let createGeometry = function () {
-		let material = new THREE.PointsMaterial({color: 0xffffff, size: 0.2})
-		let geometry = new THREE.Geometry()
+		let material = new THREE.MeshLambertMaterial({side: THREE.DoubleSide, color: 0xffffff, emissive: 0x25673d, emissiveIntensity: 0.5})
+		
+		let geometry = new THREE.BoxGeometry(3,3,3)
+		cube = new THREE.Mesh(geometry, material)
+		cube.position.x = -6
 
-		for (let i = 1; i <= 1000; i++) {
-			let x = randomInRange(-25, 25)
-			let y = randomInRange(-25, 25)
-			let z = randomInRange(-25, 25)
-			geometry.vertices.push(new THREE.Vector3(x,y,z))
-		}
+		geometry = new THREE.SphereGeometry(3,30,30)
+		sphere = new THREE.Mesh(geometry, material)
+		sphere.position.x = 0
 
-		geometry.computeBoundingSphere()
-		particles = new THREE.Points(geometry, material)
+		geometry = new THREE.ConeGeometry(3,4,20,1,true)
+		cone = new THREE.Mesh(geometry,material)
+		cone.position.x = 7
 
-		scene.add(particles)
+		scene.add(cube)
+		scene.add(sphere)
+		scene.add(cone)
 	}
 
 	let init = function() {
@@ -32,6 +31,9 @@ window.onload = () => {
 
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
 		camera.position.z = 15
+
+		let directionalLightUp = new THREE.DirectionalLight(0xffffff)
+		scene.add(directionalLightUp)
 
 		createGeometry()
 
@@ -42,7 +44,12 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		// cylinder.rotation.x += STEP
+		sphere.rotation.x += STEP
+		sphere.rotation.y += STEP
+		cube.rotation.x += STEP
+		cube.rotation.y += STEP
+		cone.rotation.x += STEP
+		cone.rotation.y += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
