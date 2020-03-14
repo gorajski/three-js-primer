@@ -6,7 +6,7 @@ window.onload = () => {
 	let cube, sphere, cone
 
 	let createGeometry = function () {
-		let material = new THREE.MeshLambertMaterial({side: THREE.DoubleSide, color: 0xffffff, emissive: 0x25673d, emissiveIntensity: 0.5})
+		let material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.5, shininess: 100, specular: 0x9d0a00})
 		
 		let geometry = new THREE.BoxGeometry(3,3,3)
 		cube = new THREE.Mesh(geometry, material)
