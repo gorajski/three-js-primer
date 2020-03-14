@@ -2,34 +2,28 @@ let scene, camera, renderer
 
 window.onload = () => { 
 	
-	let STEP = 0.06;
-	let cube, sphere
+	let STEP = 0.02;
+	let particles
+
+	let randomInRange = function(to, from) {
+		return Math.random() * (to - from) + from
+	}
 
 	let createGeometry = function () {
-		// let material = new THREE.LineBasicMaterial({color: 0xffffff, linewidth: 1})
-		// let material = new THREE.LineDashedMaterial({color: 0xffffff, linewidth: 1, dashSize: 2, gapSize: 1})
-		let material = new THREE.PointsMaterial({color: 0xffffff})
-		let geometry = new THREE.CylinderGeometry(3,2,4)
+		let material = new THREE.PointsMaterial({color: 0xffffff, size: 0.2})
+		let geometry = new THREE.Geometry()
 
-		// cylinder = new THREE.Line(geometry,material)
-		cylinder = new THREE.Points(geometry,material)
-		cylinder.position.z = -10
-		cylinder.position.x = -5
+		for (let i = 1; i <= 1000; i++) {
+			let x = randomInRange(-25, 25)
+			let y = randomInRange(-25, 25)
+			let z = randomInRange(-25, 25)
+			geometry.vertices.push(new THREE.Vector3(x,y,z))
+		}
 
-		// cylinder.computeLineDistances()		// uncomment for Line materials
+		geometry.computeBoundingSphere()
+		particles = new THREE.Points(geometry, material)
 
-
-		geometry = new THREE.SphereGeometry(3, 30, 30)
-
-		// sphere = new THREE.Line(geometry, material)
-		sphere = new THREE.Points(geometry, material)
-		sphere.position.z = 0
-		sphere.position.x = 5
-
-		// sphere.computeLineDistances()		// uncomment for Line materials
-
-		scene.add(cylinder)
-		scene.add(sphere)
+		scene.add(particles)
 	}
 
 	let init = function() {
@@ -48,10 +42,7 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		cylinder.rotation.x += STEP
-		cylinder.rotation.y += STEP
-		sphere.rotation.x += STEP
-		sphere.rotation.y += STEP
+		// cylinder.rotation.x += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
