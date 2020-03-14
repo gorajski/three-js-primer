@@ -3,30 +3,32 @@ let scene, camera, renderer
 window.onload = () => { 
 	
 	let STEP = 0.1;
-	let shape
+	let cube, sphere
 
 	let createGeometry = function () {
-		// let geometry = new THREE.BoxGeometry(5,5,5)
-		// let geometry = new THREE.SphereGeometry(5, 30, 30)
-		let geometry = new THREE.TorusGeometry(5, 2, 10, 12)
-		// let material = new THREE.MeshBasicMaterial({color: 0xbbbbbb, wireframe: true})
-		let material = new THREE.MeshNormalMaterial() 
+		let material = new THREE.MeshDepthMaterial()
+		let geometry = new THREE.BoxGeometry(3,2,4)
 
-		shape = new THREE.Mesh(geometry,material)
+		cube = new THREE.Mesh(geometry,material)
+		cube.position.z = -10
+		cube.position.x = -5
 
-		// normals = new THREE.FaceNormalsHelper(sphere, 5)
+		geometry = new THREE.SphereGeometry(3,30,30)
 
-		scene.add(shape)
-		// scene.add(sphere)
-		// scene.add(normals)
+		sphere = new THREE.Mesh(geometry, material)
+		sphere.position.z = 0
+		sphere.position.x = 5
+
+		scene.add(cube)
+		scene.add(sphere)
 	}
 
 	let init = function() {
 		scene = new THREE.Scene()
-		scene.background = new THREE.Color(0x1111ee)
+		scene.background = new THREE.Color(0xffffff)
 
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 10, 2000)
-		camera.position.z = 20
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+		camera.position.z = 5
 
 		createGeometry()
 
@@ -37,9 +39,10 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		shape.rotation.x += STEP
-		shape.rotation.y += STEP
-		// normals.update()
+		cube.position.z += STEP
+		sphere.position.z -= STEP
+
+		if(cube.position.z >= 6 || cube.position.z <= -16) STEP *= -1
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
