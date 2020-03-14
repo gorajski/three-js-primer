@@ -6,17 +6,17 @@ window.onload = () => {
 	let cube, sphere, cone
 
 	let createGeometry = function () {
-		let material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.5, shininess: 100, specular: 0x9d0a00})
+		let material = new THREE.MeshStandardMaterial({side: THREE.DoubleSide, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.4, metalness: 0.1, roughness: 0.5})
 		
 		let geometry = new THREE.BoxGeometry(3,3,3)
 		cube = new THREE.Mesh(geometry, material)
 		cube.position.x = -6
 
-		geometry = new THREE.SphereGeometry(3,30,30)
+		geometry = new THREE.SphereGeometry(3,90,90)
 		sphere = new THREE.Mesh(geometry, material)
 		sphere.position.x = 0
 
-		geometry = new THREE.ConeGeometry(3,4,20,1,true)
+		geometry = new THREE.ConeGeometry(3,4,90,1,true)
 		cone = new THREE.Mesh(geometry,material)
 		cone.position.x = 7
 
