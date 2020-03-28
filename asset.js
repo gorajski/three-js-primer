@@ -2,7 +2,7 @@ let scene, camera, renderer
 
 window.onload = () => { 
 	
-	const STEP = 0.2
+	let STEP = 0.1
 	let cube, cone, plane, light
 
 	let createGeometry = function () {
@@ -37,6 +37,9 @@ window.onload = () => {
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
 		camera.position.z = 25
 
+		light = new THREE.AmbientLight(0xeeeeff)
+		scene.add(light)
+
 		createGeometry()
 
 		renderer = new THREE.WebGLRenderer({antialias: true})
@@ -46,6 +49,8 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
+		light.intensity += STEP
+		if (light.intensity >= 8 || light.intensity <= 1) STEP *= -1
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
