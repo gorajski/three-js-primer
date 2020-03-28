@@ -3,79 +3,41 @@ let scene, camera, renderer
 window.onload = () => { 
 	
 	const STEP = 0.2
-	let delay = 0
-	let triangles = []
+	let cube, cone, plane, light
 
-	let createTriangle = function (point1, point2, point3) {
-		let material = new THREE.MeshNormalMaterial({side: THREE.DoubleSide}) //, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.4, metalness: 1})
-		
-		let geometry = new THREE.Geometry()
-		geometry.vertices.push(new THREE.Vector3(...point1))
-		geometry.vertices.push(new THREE.Vector3(...point2))
-		geometry.vertices.push(new THREE.Vector3(...point3))
-		geometry.faces.push(new THREE.Face3(0,1,2))
-		geometry.computeFaceNormals()
-		geometry.computeVertexNormals()
-		let triangle = new THREE.Mesh(geometry, material)
-		triangle.position.x = -6
+	let createGeometry = function () {
+		let geometry = new THREE.BoxGeometry(5,5,5)
+		let material = new THREE.MeshPhongMaterial({color: 0x0f1d89, shininess: 100, side: THREE.DoubleSide})
 
-		return triangle
-	}
+		cube = new THREE.Mesh(geometry,material)
+		cube.position.z = -6
+		cube.position.y = -5
+		cube.position.x = -6
 
-	let addTriangles = function() {
-		triangles.push(createTriangle(
-			[0,0,0],
-			[4,0,0],
-			[2,2,-2]
-		))
-		triangles.push(createTriangle(
-			[0,0,0],
-			[2,2,-2],
-			[0,0,-4]
-		))
-		triangles.push(createTriangle(
-			[4,0,0],
-			[4,0,-4],
-			[2,2,-2]
-		))
-		triangles.push(createTriangle(
-			[4,0,-4],
-			[0,0,-4],
-			[2,2,-2]
-		))
-		triangles.push(createTriangle(
-			[0,0,0],
-			[2,-2,-2],
-			[4,0,0]
-		))
-		triangles.push(createTriangle(
-			[0,0,0],
-			[0,0,-4],
-			[2,-2,-2]
-		))
-		triangles.push(createTriangle(
-			[4,0,-4],
-			[4,0,0],
-			[2,-2,-2]
-		))
-		triangles.push(createTriangle(
-			[0,0,-4],
-			[4,0,-4],
-			[2,-2,-2]
-		))
+		geometry = new THREE.ConeGeometry(3,4,20,1,true)
+		cone = new THREE.Mesh(geometry, material)
+		cone.position.x = 7
+		cone.position.y = -5
+
+		geometry = new THREE.PlaneGeometry(1000, 1000, 50, 50)
+		material = new THREE.MeshPhongMaterial({color: 0x693421, side: THREE.DoubleSide})
+		plane = new THREE.Mesh(geometry,material)
+		plane.rotation.x = Math.PI/2
+		plane.position.y = -100;
+
+		scene.add(cube)
+		scene.add(cone)
+		scene.add(plane)
 	}
 
 	let init = function() {
 		scene = new THREE.Scene()
-		scene.background = new THREE.Color(0x1111ee)
+		scene.background = new THREE.Color(0x88afef)
 
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
 		camera.position.z = 25
 
-		let directionalLightUp = new THREE.DirectionalLight(0xffffff)
-		scene.add(directionalLightUp)
-
-		addTriangles()
+		createGeometry()
 
 		renderer = new THREE.WebGLRenderer({antialias: true})
 		renderer.setSize(window.innerWidth, window.innerHeight)
@@ -84,17 +46,6 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-
-		triangles.forEach((triangle) => {
-			let normal = triangle.geometry.faces[0].normal
-			triangle.position.x += normal.x * STEP
-			triangle.position.y += normal.y * STEP
-			triangle.position.z += normal.z * STEP
-
-			triangle.rotation.x += STEP/2
-
-			scene.add(triangle)
-		})
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
