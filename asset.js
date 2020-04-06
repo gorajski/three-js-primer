@@ -3,6 +3,7 @@ let scene, camera, renderer, light, cube, cone, plane
 window.onload = () => { 
 	
 	let STEP = 0.1
+	let theta = 0
 
 	let createGeometry = function () {
 		let geometry = new THREE.BoxGeometry(5,5,5)
@@ -12,7 +13,17 @@ window.onload = () => {
 		cube.rotation.x = 0.6
 		cube.rotation.y = 0.6
 
-		scene.add(cube) 
+		geometry = new THREE.SphereGeometry(0.1, 30, 30)
+		material = new THREE.MeshBasicMaterial({color: 0xffffff})
+		sphere1 = new THREE.Mesh(geometry, material)
+
+		geometry = new THREE.SphereGeometry(0.1, 30, 30)
+		material = new THREE.MeshBasicMaterial({color: 0xffffff})
+		sphere2 = new THREE.Mesh(geometry, material)
+
+		scene.add(cube)
+		scene.add(sphere1)
+		scene.add(sphere2)
 	}
 
 	let init = function() {
@@ -23,16 +34,10 @@ window.onload = () => {
 		camera.position.z = 25
 
 		light = new THREE.PointLight(0xffffff, 2, 20, 2)
-		light.position.set(0,5,0)
-
-		let ambient = new THREE.AmbientLight(0xeeeeee, 1)
+		light2 = new THREE.PointLight(0xffffff, 2, 20, 2)
 
 		scene.add(light)
-		scene.add(ambient)
-
-		lightHelper = new THREE.PointLightHelper(light, 5, 0x000000)
-		scene.add(lightHelper)
-
+		scene.add(light2)
 
 		createGeometry()
 
@@ -44,9 +49,18 @@ window.onload = () => {
 
 	let mainLoop = function() {
 		
-		if (Math.abs(light.position.x) > 10) STEP *= -1
+		// if (Math.abs(light.position.x) > 10) STEP *= -1
 
-		lightHelper.update()
+		light.position.x = 6 * Math.sin(theta)
+		light.position.z = 6 * Math.cos(theta)
+		sphere1.position.x = light.position.x
+		sphere1.position.z = light.position.z
+		light2.position.y = -10 * Math.sin(theta)
+		light2.position.z = -10 * Math.cos(theta)
+		sphere2.position.y = light2.position.y
+		sphere2.position.z = light2.position.z
+
+		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
