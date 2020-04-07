@@ -2,7 +2,7 @@ let scene, camera, renderer, light, cube, cone, plane
 
 window.onload = () => { 
 	
-	let STEP = 0.1
+	let STEP = 0.01
 	let theta = 0
 
 	let createGeometry = function () {
@@ -10,20 +10,16 @@ window.onload = () => {
 		let material = new THREE.MeshPhongMaterial({color: 0xdff913, shininess: 100, side: THREE.DoubleSide})
 
 		cube = new THREE.Mesh(geometry,material)
-		cube.rotation.x = 0.6
-		cube.rotation.y = 0.6
+		cube.position.set(5, 0 , 0)
 
-		geometry = new THREE.SphereGeometry(0.1, 30, 30)
-		material = new THREE.MeshBasicMaterial({color: 0xffffff})
-		sphere1 = new THREE.Mesh(geometry, material)
-
-		geometry = new THREE.SphereGeometry(0.1, 30, 30)
-		material = new THREE.MeshBasicMaterial({color: 0xffffff})
-		sphere2 = new THREE.Mesh(geometry, material)
+		geometry = new THREE.BoxGeometry(2000, 1, 2000)
+		material = new THREE.MeshPhongMaterial({color: 0x693421, side: THREE.DoubleSide})
+		plane = new THREE.Mesh(geometry, material)
+		plane.position.y = -1
 
 		scene.add(cube)
-		scene.add(sphere1)
-		scene.add(sphere2)
+		scene.add(plane)
+
 	}
 
 	let init = function() {
@@ -31,13 +27,16 @@ window.onload = () => {
 		scene.background = new THREE.Color(0x000000)
 
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
-		camera.position.z = 25
+		camera.position.set(0,10,20)
 
-		light = new THREE.PointLight(0xffffff, 2, 20, 2)
-		light2 = new THREE.PointLight(0xffffff, 2, 20, 2)
+		spotLight = new THREE.SpotLight(0xffffff, 1)
+		spotLight.position.set(15,20,10)
+		spotLight.angle = Math.PI / 20
+		spotLight.penumbra = 0.05
+		spotLight.decay = 2
+		spotLight.distance = 200
 
-		scene.add(light)
-		scene.add(light2)
+		scene.add(spotLight)
 
 		createGeometry()
 
@@ -49,18 +48,9 @@ window.onload = () => {
 
 	let mainLoop = function() {
 		
-		// if (Math.abs(light.position.x) > 10) STEP *= -1
+		spotLight.angle += STEP
+		if (spotLight.angle > Math.PI/2 || spotLight.angle < 0) STEP *= -1
 
-		light.position.x = 6 * Math.sin(theta)
-		light.position.z = 6 * Math.cos(theta)
-		sphere1.position.x = light.position.x
-		sphere1.position.z = light.position.z
-		light2.position.y = -10 * Math.sin(theta)
-		light2.position.z = -10 * Math.cos(theta)
-		sphere2.position.y = light2.position.y
-		sphere2.position.z = light2.position.z
-
-		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
