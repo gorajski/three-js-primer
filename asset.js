@@ -1,12 +1,11 @@
 let scene, camera, renderer
-let light1
-let spheres = []
+let sphere
 
 window.onload = () => { 
 	
-	let STEP = 0.01
+	let STEP = 0.035
 	let theta = 0
-	const RADIUS = 5, BASE_X = -20, BASE_Y = -20
+	const RADIUS = 5, BASE_X = -16.5, BASE_Y = -20
 
 	let createGeometry = function() {
 		let material = new THREE.MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: THREE.DoubleSide})
@@ -16,13 +15,23 @@ window.onload = () => {
 				let geometry = new THREE.SphereGeometry(RADIUS,30,30)
 				let sphere = new THREE.Mesh(geometry,material)
 				sphere.position.x = BASE_X + j * 2 * (RADIUS+0.5)
-				sphere.position.y = BASE_Y + i * RADIUS
+				sphere.position.y = BASE_Y
 				sphere.position.z = -2*RADIUS * i
 				scene.add(sphere)
 			}
 		}
 
 	}
+
+	let createTargetSphere = function() {
+		let material = new THREE.MeshPhongMaterial({color: 0x00ff18, shininess: 100, side: THREE.DoubleSide})
+		let geometry = new THREE.SphereGeometry(RADIUS,30,30)
+		sphere = new THREE.Mesh(geometry, material)
+		sphere.position.set(0,0,0)
+
+		scene.add(sphere)
+	}
+
 
 
 	let init = function() {
@@ -32,12 +41,16 @@ window.onload = () => {
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 7, 1000)
 		camera.position.set(0,10,60)
 
-		light1 = new THREE.SpotLight(0xffffff, 1)
-		light1.position.set(0,10,15)
+		spotlight = new THREE.SpotLight(0xffffff, 1.2)
+		spotlight.position.set(0,5000,0)
 
-		scene.add(light1)
+		toplight = new THREE.HemisphereLight(0x111111, 0x000000, 1)
+
+		scene.add(spotlight)
+		// scene.add(toplight)
 
 		createGeometry()
+		createTargetSphere()
 
 		renderer = new THREE.WebGLRenderer({antialias: true})
 		renderer.setSize(window.innerWidth, window.innerHeight)
@@ -47,28 +60,24 @@ window.onload = () => {
 
 	let mainLoop = function() {
 
-		camera.lookAt(new THREE.Vector3(0,0,0))
-		camera.position.x = 40 * Math.sin(theta)
-		camera.position.z = 40 * Math.cos(theta)
+		camera.position.set(sphere.position.x, sphere.position.y, sphere.position.z + 15)
+
+		sphere.position.y = 30*Math.sin(theta)
+		sphere.position.z = 30*Math.cos(theta)
+
 		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
 	}
 
-	setInterval(switchCamera, 3000)
 	init()
 	mainLoop()
 }
 
 
-let switchCamera = function() {
-	if(camera instanceof THREE.PerspectiveCamera) {
-		camera = new THREE.OrthographicCamera(-300, 300, 400, -400, 1, 1000)
-		camera.zoom = 5
-		camera.updateProjectionMatrix()
-	} else {
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
-		camera.position.set(0,0,40)
-	}
-}
+
+
+		// camera.lookAt(new THREE.Vector3(0,0,0))
+		// camera.position.x = 40 * Math.sin(theta)
+		// camera.position.z = 40 * Math.cos(theta)
