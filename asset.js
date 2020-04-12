@@ -12,33 +12,22 @@ window.onload = () => {
 		return x + from
 	}
 
-	let createGeometry = function() {
-		let geometry = new THREE.BoxGeometry(3, 1, 3)
-		let material = new THREE.MeshPhongMaterial({color: 0xff2200, shininess: 100, side: THREE.DoubleSide})
-		cube = new THREE.Mesh(geometry,material)
-		cube.position.x = 0
-		cube.position.y = -1.5
-		cube.position.z = -15
-		cube.rotation.set(0.1,-0.2,-0.1)
-		scene.add(cube)
-
+	let createSphere = function(pos) {
 		geometry = new THREE.SphereGeometry(2, 20, 20)
-		material = new THREE.MeshPhongMaterial({color: 0x0036ee, shininess: 100, side: THREE.DoubleSide})
+		material = new THREE.MeshPhongMaterial({color: 0x4a57fa, shininess: 100, side: THREE.DoubleSide})
 		sphere = new THREE.Mesh(geometry,material)
-		sphere.position.x = 0
-		sphere.position.y = 0
-		sphere.position.z = -20
-		sphere.rotation.set(0.1,-0.2,-0.1)
+
+		sphere.position.set(pos.x, pos.y, pos.z)
 		scene.add(sphere)
 	}
 
 	let onMouseClick = function(e) {
-		mouse.x = (e.clientX / window.innerWidth) * 2 - 1
+		mouse.x = (e.clientX / window.innerWidth) * 2 - 1		
 		mouse.y = - (e.clientY / window.innerHeight) * 2 + 1
 		mouse.z = 1
 
 		rayCast.setFromCamera(mouse, camera)
-
+		createSphere(rayCast.ray.at(15, new THREE.Vector3(0,0,0)))
 	}
 
 
@@ -55,8 +44,6 @@ window.onload = () => {
 		scene.add(light1)
 		scene.add(light2)
 
-		createGeometry()
-
 		rayCast = new THREE.Raycaster()
 		mouse = new THREE.Vector2()
 		mouse.x = mouse.y = -1
@@ -69,11 +56,6 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		sphere.material.color.set(0x0036ee)
-		cube.material.color.set(0xff2200)
-
-		let intersects = rayCast.intersectObjects(scene.children)
-		intersects.forEach(obj => obj.object.material.color.set(0x00ff00))
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
