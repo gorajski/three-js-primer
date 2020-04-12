@@ -34,16 +34,16 @@ window.onload = () => {
 
 	let onKeyDown = function(e) {
 		if (e.keyCode === LEFT) {
-			cubes.forEach( cube => cube.position.x += STEP)	
+			camera.position.x -= 0.2
 		}
 		else if (e.keyCode === RIGHT) {
-			cubes.forEach( cube => cube.position.x -= STEP)	
+			camera.position.x += 0.2
 		}
 		else if (e.keyCode === DOWN) {
-			cubes.forEach( cube => cube.position.y += STEP)	
+			camera.position.y -= 0.2
 		}
 		else if (e.keyCode === UP) {
-			cubes.forEach( cube => cube.position.y -= STEP)	
+			camera.position.y += 0.2
 		}
 		else return
 	}
