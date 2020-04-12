@@ -1,37 +1,49 @@
 let scene, camera, renderer
-let sphere
+let light
+let cubes = []
 
 window.onload = () => { 
 	
-	let STEP = 0.035
+	const LEFT = 37, RIGHT = 39, UP = 38, DOWN = 40
+	let STEP = 0.02
 	let theta = 0
 	const RADIUS = 5, BASE_X = -16.5, BASE_Y = -20
 
+	let randomInRange = function(from,to) {
+		let x = Math.random() * (to - from)
+		return x + from
+	}
+
 	let createGeometry = function() {
-		let material = new THREE.MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: THREE.DoubleSide})
+		let geometry = new THREE.BoxGeometry(5, 5, 5)
 
-		for(let i = 0; i < 4; i++) {
-			for(let j = 0; j < 4; j++) {
-				let geometry = new THREE.SphereGeometry(RADIUS,30,30)
-				let sphere = new THREE.Mesh(geometry,material)
-				sphere.position.x = BASE_X + j * 2 * (RADIUS+0.5)
-				sphere.position.y = BASE_Y
-				sphere.position.z = -2*RADIUS * i
-				scene.add(sphere)
-			}
+		for(let i = 1; i <= 10; i++) {
+			let material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff, shininess: 100, side: THREE.DoubleSide})
+			let cube = new THREE.Mesh(geometry,material)
+			cube.position.x = randomInRange(-20, 20)
+			cube.position.z = randomInRange(-10, 10)
+			cubes.push(cube)
+			scene.add(cube)
 		}
-
 	}
 
-	let createTargetSphere = function() {
-		let material = new THREE.MeshPhongMaterial({color: 0x00ff18, shininess: 100, side: THREE.DoubleSide})
-		let geometry = new THREE.SphereGeometry(RADIUS,30,30)
-		sphere = new THREE.Mesh(geometry, material)
-		sphere.position.set(0,0,0)
-
-		scene.add(sphere)
+	let onKeyDown = function(e) {
+		if (e.keyCode === LEFT) {
+			STEP = -0.2
+			cubes.forEach( cube => cube.position.x += STEP)	
+		}
+		else if (e.keyCode === RIGHT) {
+			STEP = 0.2
+			cubes.forEach( cube => cube.position.x += STEP)	
+		}
+		else if (e.keyCode === UP) {
+			scene.rotation.x += 0.2
+		}
+		else if (e.keyCode === DOWN) {
+			scene.rotation.x -= 0.2
+		}
+		else return
 	}
-
 
 
 	let init = function() {
@@ -39,33 +51,22 @@ window.onload = () => {
 		scene.background = new THREE.Color(0xffffff)
 
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 7, 1000)
-		camera.position.set(0,10,60)
+		camera.position.set(0,10,40)
 
-		spotlight = new THREE.SpotLight(0xffffff, 1.2)
-		spotlight.position.set(0,5000,0)
+		light = new THREE.DirectionalLight(0xffffff, 1)
 
-		toplight = new THREE.HemisphereLight(0x111111, 0x000000, 1)
-
-		scene.add(spotlight)
-		// scene.add(toplight)
+		scene.add(light)
 
 		createGeometry()
-		createTargetSphere()
 
 		renderer = new THREE.WebGLRenderer({antialias: true})
 		renderer.setSize(window.innerWidth, window.innerHeight)
 
 		document.body.appendChild(renderer.domElement)
+		document.addEventListener("keydown", onKeyDown, false)
 	}
 
 	let mainLoop = function() {
-
-		camera.position.set(sphere.position.x, sphere.position.y, sphere.position.z + 15)
-
-		sphere.position.y = 30*Math.sin(theta)
-		sphere.position.z = 30*Math.cos(theta)
-
-		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
