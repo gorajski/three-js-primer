@@ -47,6 +47,10 @@ window.onload = () => {
 
 	let mainLoop = function() {
 
+		camera.lookAt(new THREE.Vector3(0,0,0))
+		camera.position.x = 40 * Math.sin(theta)
+		camera.position.z = 40 * Math.cos(theta)
+		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
