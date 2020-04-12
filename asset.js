@@ -51,10 +51,10 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
-		camera.fov += STEP
-		camera.updateProjectionMatrix()
-		if(camera.fov > 100 || camera.fov < 50)
-			STEP *= -1
+		camera.lookAt(new THREE.Vector3(0,0,0))
+		camera.position.x = 40 * Math.sin(theta)
+		camera.position.z = 40 * Math.cos(theta)
+		theta += STEP
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
