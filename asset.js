@@ -5,7 +5,7 @@ let cubes = []
 window.onload = () => { 
 	
 	const LEFT = 37, RIGHT = 39, UP = 38, DOWN = 40
-	let STEP = 0.02
+	let STEP = 0.2
 	let theta = 0
 	const RADIUS = 5, BASE_X = -16.5, BASE_Y = -20
 
@@ -15,32 +15,35 @@ window.onload = () => {
 	}
 
 	let createGeometry = function() {
-		let geometry = new THREE.BoxGeometry(5, 5, 5)
 
-		for(let i = 1; i <= 10; i++) {
+		for(let i = 1; i <= 60; i++) {
+			let sideLength = randomInRange(2,6)
+			let height = randomInRange(1,5)
+			let geometry = new THREE.BoxGeometry(sideLength, height, sideLength)
 			let material = new THREE.MeshPhongMaterial({color: Math.random() * 0xffffff, shininess: 100, side: THREE.DoubleSide})
 			let cube = new THREE.Mesh(geometry,material)
-			cube.position.x = randomInRange(-20, 20)
-			cube.position.z = randomInRange(-10, 10)
+			cube.position.x = randomInRange(-60, 60)
+			cube.position.y = height/2
+			cube.position.z = randomInRange(-100, 0)
 			cubes.push(cube)
 			scene.add(cube)
 		}
 	}
 
+
+
 	let onKeyDown = function(e) {
 		if (e.keyCode === LEFT) {
-			STEP = -0.2
 			cubes.forEach( cube => cube.position.x += STEP)	
 		}
 		else if (e.keyCode === RIGHT) {
-			STEP = 0.2
-			cubes.forEach( cube => cube.position.x += STEP)	
-		}
-		else if (e.keyCode === UP) {
-			scene.rotation.x += 0.2
+			cubes.forEach( cube => cube.position.x -= STEP)	
 		}
 		else if (e.keyCode === DOWN) {
-			scene.rotation.x -= 0.2
+			cubes.forEach( cube => cube.position.y += STEP)	
+		}
+		else if (e.keyCode === UP) {
+			cubes.forEach( cube => cube.position.y -= STEP)	
 		}
 		else return
 	}
@@ -50,12 +53,14 @@ window.onload = () => {
 		scene = new THREE.Scene()
 		scene.background = new THREE.Color(0xffffff)
 
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 7, 1000)
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
 		camera.position.set(0,10,40)
 
-		light = new THREE.DirectionalLight(0xffffff, 1)
+		dirLight = new THREE.DirectionalLight(0xffffff, 1)
+		scene.add(dirLight)
 
-		scene.add(light)
+		ambientLight = new THREE.AmbientLight(0x404040)
+		scene.add(ambientLight)
 
 		createGeometry()
 
@@ -67,6 +72,7 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
+		camera.position.z -= 0.2
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
