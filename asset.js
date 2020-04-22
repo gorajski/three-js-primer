@@ -1,6 +1,6 @@
 let scene, camera, renderer
 let rayCast, mouse
-let cube, sphere
+let spheres = []
 
 window.onload = () => { 
 	
@@ -12,13 +12,13 @@ window.onload = () => {
 		return x + from
 	}
 
-	let createSphere = function(pos) {
+	let createSphere = function(pos, color) {
 		geometry = new THREE.SphereGeometry(2, 20, 20)
-		material = new THREE.MeshPhongMaterial({color: 0x4a57fa, shininess: 100, side: THREE.DoubleSide})
+		material = new THREE.MeshPhongMaterial({color: color, shininess: 100, side: THREE.DoubleSide})
 		sphere = new THREE.Mesh(geometry,material)
 
 		sphere.position.set(pos.x, pos.y, pos.z)
-		scene.add(sphere)
+		return sphere
 	}
 
 	let onMouseClick = function(e) {
@@ -27,7 +27,11 @@ window.onload = () => {
 		mouse.z = 1
 
 		rayCast.setFromCamera(mouse, camera)
-		createSphere(rayCast.ray.at(15, new THREE.Vector3(0,0,0)))
+		let intersects = rayCast.intersectObjects(scene.children)
+		intersects.forEach(strike => {
+			scene.remove(strike.object)
+			spheres = spheres.filter(balloon => balloon !== strike.object)
+		})
 	}
 
 
@@ -44,6 +48,12 @@ window.onload = () => {
 		scene.add(light1)
 		scene.add(light2)
 
+		for(let i=0; i<40; i++) {
+			let sphere = createSphere(new THREE.Vector3(randomInRange(-10,10), randomInRange(-5,25), randomInRange(-10, -30)), 0xffffff*Math.random())
+			spheres.push(sphere)
+			scene.add(sphere)
+		}
+
 		rayCast = new THREE.Raycaster()
 		mouse = new THREE.Vector2()
 		mouse.x = mouse.y = -1
@@ -56,6 +66,10 @@ window.onload = () => {
 	}
 
 	let mainLoop = function() {
+		spheres.forEach(balloon => {
+			balloon.position.y += STEP
+			if (balloon.position.y > 30) balloon.position.y = -5
+		})
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
