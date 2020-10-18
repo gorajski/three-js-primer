@@ -1,66 +1,78 @@
-let scene, camera, renderer, light, plane
-let STEP = 0.02, theta = 0
+let scene, camera, renderer, light, particles = []
+let STEP = 0.08, theta = 0
+const LEFT = 37, RIGHT = 39, UP = 38, DOWN = 40
 
 window.onload = function() {
 
 	let createGeometry = function() {
-		let texture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Adrar_sands.JPG/1280px-Adrar_sands.JPG')
-		let material = new THREE.MeshLambertMaterial({map: texture})
-		let geometry = new THREE.BoxGeometry(1000, 1, 1000)
-		plane = new THREE.Mesh(geometry, material)
-		plane.position.y = -1
-		plane.receiveShadow = true
 
-		scene.add(plane)
-		scene.add(createPyramid(115, 9, 0, 20, 25))
-		scene.add(createPyramid(50, 14, -20, 30, 40))
-		scene.add(createPyramid(-20, 9, 0, 20, 25))
-		scene.add(createPyramid(-60, 4, -35, 10, 10))
+		[...Array(10)].map(() => {
+		  
+			let radius = 20*Math.random()+1
+			let position = new THREE.Vector3(0,0,radius)
+			let frequency = Math.random()
+			let phase = new THREE.Vector3(20*Math.random(), 20*Math.random(), 20*Math.random())
+
+			createParticle(position, radius, frequency, phase)
+		});
 	}
 
-	let createPyramid = function(x, y, z, height, width) {
-		let texture = new THREE.TextureLoader().load('https://upload.wikimedia.org/wikipedia/commons/3/3b/Tuff_ohyaishi02.jpg')
-		let geometry = new THREE.CylinderGeometry(0, width, height, 4)
-		let material = new THREE.MeshLambertMaterial({map: texture})
-		let p = new THREE.Mesh(geometry, material)
-		p.position.set(x, y, z)
-		p.castShadow = true
-		p.receiveShadow = true
-		return p
+	let createParticle = function(position, radius, frequency, phase) {
+		let geometry = new THREE.SphereGeometry(1, 15, 13)
+		let material = new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color: 0xf3f3f3, specular: 0xffffff, shininess: 8})
+		let particle = new THREE.Mesh(geometry, material)
+
+		particle.position.set(position)
+		particle.radius = radius
+		particle.frequency = frequency
+		particle.phase = phase
+
+		particles.push(particle)
+	}
+
+	let createLight = function() {
+		light = new THREE.PointLight(0xffffff, 1, 50)
+		light.position.set(0,0,0)
+		scene.add(light)
+	}
+
+	let onKeyDown = function(e) {
+		if (e.keyCode == DOWN) {
+			camera.position.z += 10*STEP
+		} else if (e.keyCode == UP) {
+			camera.position.z -= 10*STEP
+		}
 	}
 
 	let init = function() {
 		scene = new THREE.Scene()
-		scene.background = new THREE.Color(0xbbddff)
+		scene.background = new THREE.Color(0x0a0a0a)
 
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
-		camera.position.set(0, 7, 90)
-		camera.lookAt(new THREE.Vector3(-60,4,-35))
+		camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight)
+		camera.position.set(0, 0, 50)
+		scene.add(camera)
 
+		createLight()
 		createGeometry()
-
-		light = new THREE.DirectionalLight(0xffffff, 1)
-		light.castShadow = true
-
-		light.shadow = new THREE.LightShadow(new THREE.PerspectiveCamera(60, 2, 10, 2000))
-		light.shadow.bias = 0.00001
-		light.shadow.mapSize.width = 2048
-		light.shadow.mapSize.height = 1024
-		light.position.set(180, 90, 0)
-
-		scene.add(light)
 
 		renderer = new THREE.WebGLRenderer()
 		renderer.shadowMap.enabled = true
 		renderer.setSize(window.innerWidth, window.innerHeight)
-		
+
 		document.body.appendChild(renderer.domElement)
+		document.addEventListener("keydown", onKeyDown, false)
 	}
 
 	let mainLoop = function() {
-		light.position.x = 200 * Math.cos(theta)
-		light.position.y = 200 * Math.sin(theta)
 		theta += STEP
+
+		for(let particle of particles) {
+			particle.position.x = particle.radius * Math.sin(particle.frequency * theta + particle.phase.x)
+			particle.position.y = particle.radius * Math.sin(particle.frequency * theta + particle.phase.y)
+			particle.position.z = particle.radius * Math.sin(particle.frequency * theta + particle.phase.z)
+
+			scene.add(particle)
+		}
 
 		renderer.render(scene, camera)
 		requestAnimationFrame(mainLoop)
